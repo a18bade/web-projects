@@ -1,0 +1,45 @@
+input[type="submit"] {
+  background-color: rgb(119, 245, 119);
+  border: none;
+}
+
+.personalProgressForm {
+  display: flex;
+  flex-direction: row;
+  /* clear: both; */
+  background-color: #f2f2f2;
+  align-items: center;
+  /* display: grid; */
+  /* grid-template-columns: 1fr 1fr; */
+  padding: 20px;
+/*   margin: 20px 300px 20px 20px;
+ */  justify-content: space-evenly
+}
+
+
+.button-edit {
+  background: rgb(28, 184, 65);
+  /* this is a green */
+}
+
+.button-delete {
+  background: rgb(202, 60, 60);
+  /* this is a red */
+}
+
+a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #3d6c78;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.chart {
+  width: 45%;
+  height: 45%;
+  display:inline-block;
+}

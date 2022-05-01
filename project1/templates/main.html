@@ -1,0 +1,101 @@
+{% extends "base.html" %} {% block title %}project{% endblock %} {% block
+    content %}
+    <head>
+      <link rel="stylesheet" href="static/css/style.css" />
+    </head>
+    
+    <body>
+        <h1 class="center">Welcome to send the disc!</h1>
+        {% from "_formhelpers.html" import render_field %}
+        <p class="center">Top 5 players on the list!</p>
+        <div class="tableContainer center">
+            <!-- <label for="best-score" class="center">Top 5 players on the list!</label><br> -->
+            <table class="pure-table summary-table" name="best-score">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Date</th>
+                        <th>Course</th>
+                        <th>Score</th>
+                        <th>Strokes</th>
+                    </tr>
+                </thead>
+            {% for response in responses%}
+            {% if data == "" %}
+                <tr>
+                    <td>{{response[0]}}</td>
+                    <td>{{response[1]}}</td>
+                    <td>{{response[2]}}</td>
+                    <td>{{response[3]}}</td>
+                    <td>{{response[4]}}</td>
+                </tr>
+            {% endif %}
+            {% if data != "" %}
+            {% set name = session['profile']['nickname'] %}
+            {% set checkName = response[0] %}
+                {% if name != checkName %}
+                    <tr>
+                        <td>{{response[0]}}</td>
+                        <td>{{response[1]}}</td>
+                        <td>{{response[2]}}</td>
+                        <td>{{response[3]}}</td>
+                        <td>{{response[4]}}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td style="background-color: rgb(250, 184, 202);">{{response[0]}}</td>
+                        <td style="background-color: rgb(250, 184, 202);">{{response[1]}}</td>
+                        <td style="background-color: rgb(250, 184, 202);">{{response[2]}}</td>
+                        <td style="background-color: rgb(250, 184, 202);">{{response[3]}}</td>
+                        <td style="background-color: rgb(250, 184, 202);">{{response[4]}}</td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+            {% endfor %}
+            </table>
+        </div>
+        <p class="center">Player with the most games played!</p>
+        <div class="tableContainer2">
+            <!-- <label for="most-played" class="center">Most played players on the list!</label> -->
+            <table class="pure-table summary-table" name="most-played">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Score</th>
+                        <th>Strokes</th>
+                        <th>Played</th>
+                    </tr>
+                </thead>
+                <tr>
+                    {% if data == "" %}
+                    <td>{{most_played[0]}}</td>
+                    <td>{{most_played[1]}}</td>
+                    <td>{{most_played[2]}}</td>
+                    <td>{{most_played[3]}}</td>
+                    {% endif %}
+
+                    {% if data != "" %}
+                        {% set name = session['profile']['nickname'] %}
+                        {% set checkName = most_played[0] %}
+                        {% if name != checkName %}
+                            <td>{{most_played[0]}}</td>
+                            <td>{{most_played[1]}}</td>
+                            <td>{{most_played[2]}}</td>
+                            <td>{{most_played[3]}}</td>
+                            {% else %}
+                            <td style="background-color: rgb(250, 184, 202);">{{most_played[0]}}</td>
+                            <td style="background-color: rgb(250, 184, 202);">{{most_played[1]}}</td>
+                            <td style="background-color: rgb(250, 184, 202);">{{most_played[2]}}</td>
+                            <td style="background-color: rgb(250, 184, 202);">{{most_played[3]}}</td>
+                        {% endif %}
+                    {% endif %}
+
+                </tr>
+            </table>
+        </div>
+        <p class="center">Check other's scores or add your disc golf scores!!</p>
+        <button name="submit_button" class="pure-button pure-button-primary button-score" onclick="window.location.href='{{ url_for('scores') }}';">Scores</button>
+        <button name="submit_button" class="pure-button button-play" onclick="window.location.href='{{ url_for('play') }}';">Play</button>
+</body>
+{% endblock %}
+    

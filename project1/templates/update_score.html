@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}update score{% endblock %}
+{% block content %}
+<style>
+    html {
+        display: table;
+        margin: auto;
+    }
+
+
+    .update {
+        background-color: #f2f2f2;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        padding: 20px;
+    }
+    #footer {
+        text-align: center;
+    }
+
+    .pure-button {
+        background-color: rgb(28, 184, 65);
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .pure-button:hover {
+        color: #3d6c78;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .center {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
+    .input_box {
+        margin: 0 auto;
+    }
+</style>
+<h1 class="center">Update</h1>
+<div class="update">
+    <form class="pure-form pure-form-stacked" action="{{url_for('get_update_score',score_id=userData[5])}}" ,
+        method="POST">
+
+        <label for="date" class="center">Date:</label>
+        <input type="date" style="margin: 0 auto;" id="date" name="date" value="{{userData[0]}}"><br>
+
+        <label for="date">Time:</label>
+        <input type="time" style="margin: 0 auto;"  id="time" name="time" step="1" value="{{userData[1]}}"><br>
+
+        <label for="course">Course:</label>
+        <select id="course" style="margin: 0 auto;" name="course">
+            {%for c in courses%}
+                {% if c == userData[2] %}
+                    <option  value="{{c}}" id="{{c}}" selected>{{c}}</option>
+                {% else %}
+                    <option value="{{c}}" id="{{c}}">{{c}}</option>
+                {% endif %}      
+            {%endfor%}
+        </select>
+        
+
+        <label for="score">Score:</label>
+        <textarea style="margin: 0 auto;" id="score" name="score" rows="1" cols="5">{{userData[3]}}</textarea><br>
+
+        <label for="strokes">Strokes:</label>
+        <textarea style="margin: 0 auto;" id="strokes" name="strokes" rows="1" cols="5">{{userData[4]}}</textarea><br>
+        <input type="submit" value="Update Score" class="pure-button">
+    </form>
+</div>
+{% endblock %}

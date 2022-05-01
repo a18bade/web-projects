@@ -1,0 +1,82 @@
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+.nav {
+  display: inline;
+}
+
+.highlight {
+  background-color: #d3d3d3;
+}
+
+nav, div {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+
+.chart {
+  width: 35%;
+  height: 35%;
+  display:inline-block;
+}
+
+.button-play {
+  background: rgb(28, 184, 65);
+  color: white;
+  margin-right: auto;
+
+}
+.button-score{
+  margin-left: 16em;
+
+
+}
+
+nav{
+  margin: 0 auto;
+  text-align: center;
+}
+html {
+    display: table;
+    margin: auto;
+}
+
+.content {
+    display: table-cell;
+    vertical-align: middle;
+}
+.mainBody {
+  background-image: "sendthatdisc.jpeg";
+  background-color: rgb(230, 230, 230);
+}
+.centerDiv {
+  padding-left: 20em;
+
+}
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.summary-table {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.chart1 {
+  margin-left: auto;
+  margin-right: auto;
+}
+.chart2 {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home{
+  background-color: #F55925;
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head %}{% endblock %}
+    <link rel="stylesheet" href="static/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.0.6/build/pure-min.css"
+      integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5"
+      crossorigin="anonymous"
+    />
+    <script src="{{url_for('static', filename='script.js')}}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+  </head>
+
+  <body class= "mainBody" onload="navBar()">
+    <nav class="pure-menu-horizontal">
+      <ul>
+        <li class="pure-menu-item">
+          <a href="{{ url_for('main')}}" class="pure-menu-link" id="home">Home</a>
+        </li>
+        <li class="pure-menu-item">
+          <a href="{{ url_for('scores')}}" class="pure-menu-link" id="scores">Scores</a>
+        </li>
+        {% if data != '' %}        
+        <li class="pure-menu-item">
+          <a href="{{ url_for('play')}}" class="pure-menu-link" id="play">Play</a>
+        </li>
+        <li id="personalProgressTab" class="pure-menu-item">
+          <a href="{{ url_for('personal_progress')}}" class="pure-menu-link" id="progress"
+            >Personal Progress</a
+          >
+        </li>
+        <li class="pure-menu-item">
+          <a href="{{ url_for('logout')}}" class="pure-menu-link">Logout</a>
+        </li>
+        {% else %}
+        <li class="pure-menu-item">
+          <a href="{{ url_for('login')}}" class="pure-menu-link">Login</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <div id="content">{% block content %}{% endblock %}</div>
+    <br />
+    <div id="footer" class="center">
+      {% block footer %} &copy; The greatest website of all time 2022 {%
+      endblock %}
+    </div>
+  </body>
+</html>

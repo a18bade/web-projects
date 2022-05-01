@@ -1,0 +1,484 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+    /*---- My Form -----------*/
+    .grid-container-form {
+        clear: both;
+        max-width: 20em;
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        margin: 20px;
+        padding: 20px;
+        text-align: center;
+        display: grid;
+        grid-template-columns: auto auto;
+    }
+
+    .grid-container-form div {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    #grid-container-scorecard {
+        clear: both;
+        margin: 20px;
+        padding: 20px;
+        max-width: 35em;
+    }
+
+    .total-hole-div {
+        margin-left: 3em;
+        max-width: 8em;
+        float: left;
+    }
+
+    .grid-cell-scorecard {
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+
+    .holeNum {
+        text-align: center;
+    }
+
+    .score {
+        text-align: center;
+        margin-bottom: 2em;
+    }
+
+
+    .grid-container div {
+        padding: 20px;
+    }
+
+    input[type=text] {
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    label {
+        width: 100%;
+        display: inline-block;
+    }
+
+    input[type=reset] {
+        background-color: rgb(199, 199, 199);
+        border: none;
+    }
+
+    .totalScoreBox {
+        clear: both;
+        background-color: #f2f2f2;
+        width: 15em;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .playForm {
+        clear: both;
+        display: flex;
+        /* flex-direction: row; */
+        float: left;
+        /* clear: both; */
+        background-color: #f2f2f2;
+        align-items: center;
+        /* display: grid; */
+        /* grid-template-columns: 1fr 1fr; */
+        padding: 20px;
+        /* margin: 20px 600px 20px 20px; */
+        justify-content: space-evenly;
+    }
+    .playForm p {
+        padding: 0 1em;
+    }
+    .playForm select {
+        padding: 0 1em;
+    }
+</style>
+{% endblock %}
+{% block title %}project{% endblock %}
+{% block content %}
+{% from "_formhelpers.html" import render_field %}
+<div class="playForm">
+    <p>Choose State:</p>
+    <select id="state" name="state" onchange="chooseState(this.value)">
+        <option value="Choose">Choose State</option>
+        <option value="Minnesota">Minnesota</option>
+    </select>
+    <p>Course Name:</p>
+    <select id="course" name="course">
+        <option value="Choose">Choose</option>
+    </select>
+</div>
+<br>
+
+<div id="grid-container-scorecard">
+</div>
+<br>
+
+<div class="totalScoreBox center">
+    <p>Total Strokes:</p>
+    <p id="totalStrokes">0</p>
+    <p>Score:</p>
+    <p id="totalScore">0</p>
+</div>
+
+<div>
+    <form method="post" class="center">
+        <input type="text" id="totalStrokesInput" name="totalStrokesInput" style="display: none" value="0">
+        <input type="text" id="totalScoreInput" name="totalScoreInput" style="display: none" value="0">
+        <input type="text" id="courseInput" name="courseInput" style="display: none" value="None">
+        <input type="submit" class="pure-button pure-button-primary center" style="display: none" id="submitButton" value="Submit">
+    </form>
+</div>
+
+
+<script>
+    var map;
+    var geocoder;
+    var markers = [];
+    var directionsService;
+    var directionsRenderer;
+
+
+    var stateSelector;
+    var courseSelector;
+
+    var destintation;
+    var travelMode;
+
+    var parList = [];
+    var holeList = [];
+
+
+    var coonRapidsParList = [3, 3, 3, 3, 3, 3, 3, 3, 4,
+        3, 3, 3, 3, 4, 3, 3, 3, 3,
+        3, 3, 3];
+    var coonRapidsHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 10,
+        11, 12, 13, 14, 15, 16, 17, 18, 19,
+        'A', 21, 20];
+
+    var bethelUniversityParList = [3, 3, 4, 3, 4, 3, 3, 3, 3, 4, 3, 3, 3, 3, 4, 3, 3, 3];
+    var bethelUniversityHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+    var riverFrontParList = [3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 4];
+    var riverFrontHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+
+    var bryantLakeParList = [4, 3, 3, 3, 4, 3, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4];
+    var bryantLakeHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+    var acornParkParList = [3, 3, 4, 4, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3, 4];
+    var acornParkHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+    var elmCreekParList = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 4];
+    var elmCreekHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+    var hamLakeParList = [3, 3, 3, 3, 4, 3, 3, 3, 4, 3, 3, 4, 3, 3, 3, 3, 3, 3];
+    var hamLakeHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+    var hylandParkParList = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3];
+    var hylandParkHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+    var lochnessParList = [5, 4, 4, 3, 4, 4, 3, 4, 3];
+    var lochnessHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    var bassettCreekParList = [3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3];
+    var bassettCreekHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+    var alimagnetParList = [3, 3, 4, 4, 4, 3, 3, 4, 3, 3, 4, 4];
+    var alimagnetHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+    var redOakParList = [3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4];
+    var redOakHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+    var minnehahaParList = [3, 3, 3, 3, 3, 3, 3, 3, 3];
+    var minnehahaHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    var sunnySideParList = [3, 3, 3, 3, 3, 3, 3, 3, 3];
+    var sunnySideHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    var bunkerHillsParList = [3, 3, 3, 3, 3, 4, 3, 4, 4];
+    var bunkerHillsHoleNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    var kincaidParkParList = [1, 1, 1, 1, 1]
+    var kincaidHoleNumbers = [1, 2, 3, 4, 5]
+
+    var peterscreekParList = [2, 2, 2, 2, 2]
+    var peterscreekHoleNumbers = [1, 2, 3, 4, 5]
+
+    var washingtonparkParList = [3, 3, 3, 3, 3]
+    var washingtonHoleNumbers = [1, 2, 3, 4, 5]
+
+    var northwoodparkParList = [4, 4, 4, 4, 4]
+    var northwoodparHoleNumbers = [1, 2, 3, 4, 5]
+
+    var lindseyparkParList = [5, 5, 5, 5, 5]
+    var lindseyparkHoleNumbers = [1, 2, 3, 4, 5]
+
+    var flyingarmadilloParList = [6, 6, 6, 6, 6]
+    var flyingarmadilloHoleNumbers = [1, 2, 3, 4, 5]
+
+
+
+    var changeParkState = {
+        Alabama: [],
+        Alaska: ["Kincaid Park", "Peters Creek"],
+        Arizona: [],
+        Arkansas: [],
+        California: [],
+        Colorado: [],
+        Connecticut: [],
+        Delaware: [],
+        Florida: [],
+        Georgia: [],
+        Hawaii: [],
+        Idaho: [],
+        Illinois: [],
+        Indiana: [],
+        Iowa: [],
+        Kansas: [],
+        Kentucky: [],
+        Louisiana: [],
+        Maine: [],
+        Maryland: [],
+        Massachusetts: [],
+        Michigan: [],
+        Minnesota: ["Acorn Park", "Alimagnet Park", "Bassett Creek", "Bethel University", "Bryant Lake", "Bunker Hills", "Coon Rapids", "Elm Creek Park",
+            "Ham Lake", "Hyland Park", "Lochness", "Minnehaha Falls", "Red Oak Park", "River Front", "Sunnyside Park"],
+        Mississippi: [],
+        Missouri: [],
+        Montana: [],
+        Nebraska: [],
+        Nevada: [],
+        New_Hampshire: [],
+        New_Jersey: [],
+        New_Mexico: [],
+        New_York: [],
+        North_Carolina: [],
+        North_Dakota: [],
+        Ohio: [],
+        Oklahoma: [],
+        Oregon: [],
+        Pennsylvania: [],
+        Rhode_Island: [],
+        South_Carolina: [],
+        South_Dakota: [],
+        Tennessee: [],
+        Texas: ["Lindsey Park", "Flying Armadillo"],
+        Utah: [],
+        Vermont: [],
+        Virginia: [],
+        Washington: ["Washington Park", "Northwood Park"],
+        West_Virginia: [],
+        Wisconsin: [],
+        Wyoming: []
+
+    }
+
+    function chooseState(value) {
+        if (value == "Choose") {
+            document.getElementById("course").innerHTML = "<option>"+ "Choose" +"</option>";
+            document.getElementById("grid-container-scorecard").innerHTML = "";
+            document.getElementById("submitButton").style.display = "none";
+        }
+        else {
+            var parkChoice = "";
+            parkChoice = "<option>" + "Choose" + "</option>";
+            for (var parkId in changeParkState[value]) {
+                parkChoice += "<option>" + changeParkState[value][parkId] + "</option>";
+            }
+            document.getElementById("course").innerHTML = parkChoice;
+        }
+    }
+
+    window.addEventListener("load", windowOnLoadCalls);
+
+    function windowOnLoadCalls() {
+        courseSelector = document.getElementById("course");
+        courseSelector.addEventListener("change", setUpCourse);
+    }
+
+    function setUpCourse() {
+        document.getElementById("submitButton").style.display = "inline";
+        if (courseSelector.value == "Choose") {
+            parList = "";
+            holeList = "";
+            document.getElementById("submitButton").style.display = "none";
+        } else if (courseSelector.value == "Coon Rapids") {
+            parList = coonRapidsParList;
+            holeList = coonRapidsHoleNumbers;
+        } else if (courseSelector.value == "River Front") {
+            parList = riverFrontParList;
+            holeList = riverFrontHoleNumbers;
+        } else if (courseSelector.value == "Bryant Lake") {
+            parList = bryantLakeParList;
+            holeList = bryantLakeHoleNumbers;
+        } else if (courseSelector.value == "Acorn Park") {
+            parList = acornParkParList;
+            holeList = acornParkHoleNumbers;
+        } else if (courseSelector.value == "Ham Lake") {
+            parList = hamLakeParList;
+            holeList = hamLakeHoleNumbers;
+        } else if (courseSelector.value == "Lochness") {
+            parList = lochnessParList;
+            holeList = lochnessHoleNumbers;
+        } else if (courseSelector.value == "Bassett Creek") {
+            parList = bassettCreekParList;
+            holeList = bassettCreekHoleNumbers;
+        } else if (courseSelector.value == "Alimagnet Park") {
+            parList = alimagnetParList;
+            holeList = alimagnetHoleNumbers;
+        } else if (courseSelector.value == "Red Oak Park") {
+            parList = redOakParList;
+            holeList = redOakHoleNumbers;
+        } else if (courseSelector.value == "Minnehaha Falls") {
+            parList = minnehahaParList;
+            holeList = minnehahaHoleNumbers;
+        } else if (courseSelector.value == "Sunnyside Park") {
+            parList = sunnySideParList;
+            holeList = sunnySideHoleNumbers;
+        } else if (courseSelector.value == "Hyland Park") {
+            parList = hylandParkParList;
+            holeList = hylandParkHoleNumbers;
+        } else if (courseSelector.value == "Elm Creek Park") {
+            parList = elmCreekParList;
+            holeList = elmCreekHoleNumbers;
+        } else if (courseSelector.value == "Bunker Hills") {
+            parList = bunkerHillsParList;
+            holeList = bunkerHillsHoleNumbers;
+        } else if (courseSelector.value == "Kincaid Park") {
+            parList = kincaidParkParList;
+            holeList = kincaidHoleNumbers;
+        } else if (courseSelector.value == "Peters Creek") {
+            parList = peterscreekParList;
+            holeList = peterscreekHoleNumbers;
+        } else if (courseSelector.value == "Bethel University") {
+            parList = bethelUniversityParList;
+            holeList = bethelUniversityHoleNumbers;
+        }
+
+        scoreHtml = document.getElementById("courseInput");
+        scoreHtml.value = courseSelector.value;
+
+        courseSelection();
+    }
+
+    function courseSelection() {
+        let divsToAdd = [];
+        var oldGridCells = document.getElementsByClassName("grid-cell-scorecard");
+        for (i = 0; i < oldGridCells.length; i++) {
+            oldGridCells[i].remove();
+        }
+
+        var scoreCardDiv = document.getElementById("grid-container-scorecard");
+        while (scoreCardDiv.firstChild) {
+            scoreCardDiv.removeChild(scoreCardDiv.lastChild);
+        }
+        for (i = 0; i < holeList.length; i++) {
+            let newHoleDiv = document.createElement('div');
+            newHoleDiv.classList.add("grid-cell-scorecard");
+            let newHoleLabel = document.createElement('label');
+            newHoleLabel.classList.add("holeNum");
+            newHoleLabel.innerHTML = "Hole: " + holeList[i];
+            newHoleDiv.appendChild(newHoleLabel);
+
+            let newParDiv = document.createElement('div');
+            newParDiv.classList.add("grid-cell-scorecard");
+            let newParLabel = document.createElement('label');
+            newParLabel.classList.add("holeNum");
+            newParLabel.innerHTML = "Par: " + parList[i];
+            newParDiv.appendChild(newParLabel);
+
+            let newInputDiv = document.createElement('div');
+            newInputDiv.classList.add("grid-cell-scorecard");
+            let newInputTag = document.createElement('input');
+            newInputTag.setAttribute("class", "score");
+            newInputTag.setAttribute("type", "text");
+            newInputTag.setAttribute("name", "hole" + holeList[i]);
+            newInputTag.setAttribute("pattern", "[0-9]*$");
+            newInputDiv.appendChild(newInputTag);
+
+            let totalHoleDiv = document.createElement('div');
+            totalHoleDiv.classList.add("total-hole-div");
+            totalHoleDiv.appendChild(newHoleDiv);
+            totalHoleDiv.appendChild(newParDiv);
+            totalHoleDiv.appendChild(newInputDiv);
+            scoreCardDiv.appendChild(totalHoleDiv);
+        }
+
+        let scores = document.getElementsByClassName("score");
+        for (i = 0; i < scores.length; i++) {
+            scores[i].addEventListener("input", updateTotalStrokes);
+        }
+    }
+
+    function updateTotalStrokes() {
+        let totalStrokes = document.getElementById("totalStrokes");
+        let strokeFields = document.getElementsByClassName("score");
+
+        let runningStrokes = 0;
+        for (i = 0; i < strokeFields.length; i++) {
+            if (parseInt(strokeFields[i].value)) {
+                if(parseInt(strokeFields[i].value) < 0){
+                    strokeFields[i].value = "";
+                }else{
+                    runningStrokes += parseInt(strokeFields[i].value);
+                }
+                if (parseInt(strokeFields[i].value) < parseInt(parList[i]) - 2) {
+                    strokeFields[i].style.backgroundColor = "gold";
+                } else if (parseInt(strokeFields[i].value) == parseInt(parList[i]) - 2) {
+                    strokeFields[i].style.backgroundColor = "green";
+                }
+                else if (parseInt(strokeFields[i].value) == parseInt(parList[i]) - 1) {
+                    strokeFields[i].style.backgroundColor = "lightgreen";
+                }
+                else if (parseInt(strokeFields[i].value) == parseInt(parList[i])) {
+                    strokeFields[i].style.backgroundColor = "white";
+                }
+                else if (parseInt(strokeFields[i].value) == parseInt(parList[i]) + 1) {
+                    strokeFields[i].style.backgroundColor = "pink";
+                }
+                else if (parseInt(strokeFields[i].value) == parseInt(parList[i]) + 2) {
+                    strokeFields[i].style.backgroundColor = "lightcoral";
+                }
+                else if (parseInt(strokeFields[i].value) == parseInt(parList[i]) + 3) {
+                    strokeFields[i].style.backgroundColor = "rgb(255, 0, 0)";
+                }
+                else if (parseInt(strokeFields[i].value) > parseInt(parList[i]) + 3) {
+                    strokeFields[i].style.backgroundColor = "rgb(192, 0, 0)";
+                }
+            } else {
+                strokeFields[i].value = "";
+                strokeFields[i].style.backgroundColor = "white";
+            }
+        }
+        totalStrokes.innerHTML = runningStrokes;
+
+
+        strokesHtml = document.getElementById("totalStrokesInput");
+        strokesHtml.value = runningStrokes;
+
+
+        let score = document.getElementById("totalScore");
+        let currentScore = 0;
+        for (i = 0; i < parList.length; i++) {
+            if (parseInt(strokeFields[i].value)) {
+                currentScore += parseInt(strokeFields[i].value) - parList[i];
+            }
+        }
+
+        if (currentScore > 0) {
+            score.innerHTML = "+" + currentScore;
+        } else {
+            score.innerHTML = currentScore;
+        }
+
+        scoreHtml = document.getElementById("totalScoreInput");
+        scoreHtml.value = score.innerHTML;
+    }
+
+</script>
+{% endblock %}

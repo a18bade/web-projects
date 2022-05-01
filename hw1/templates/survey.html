@@ -1,0 +1,42 @@
+{%extends 'base.html'%}
+{%block title%} Survey Page for {%endblock%}
+
+{%block content%} 
+<div>
+    <br>
+    <form id="survey"  action="/survey" method="post" class="pure-form-aligned">
+        <label for="fill_in"><t>What is your favorite movie, and why?</t></label>
+        <br><br>
+        <textarea id="fill_in" name="fill_in" cols="40" rows="5"  minlength="3" required></textarea>
+        <br>
+        <p>Select your favorite movie genre:</p>
+            <input type="radio" id="Action", name="favorite_genre", value="Action" required>
+            <label class="pure-radio" for="Action">Action</label><br>
+            <input type="radio" id="Comedy" name="favorite_genre" value="Comedy">
+            <label class="pure-radio" for="Comedy">Comedy</label><br>
+            <input type="radio" id="Romance" name="favorite_genre" value="Romance">
+            <label class="pure-radio" for="Romance">Romance</label><br>
+            <input type="radio" id="Drama" name="favorite_genre" value="Drama">
+            <label class="pure-radio"for="Drama">Drama</label>
+            
+        <br>
+        <p>What is the most important aspect of a movie that makes it good?</p>
+        <label for="aspect">Select one aspect:</label>
+        <select id="aspect" name="aspect">
+            <option value="famous_actors">The movie includes famous actors and cameos.</option>
+            <option value="long_length">The movie is longer than 2 hours.</option>
+            <option value="famous_director">The movie has an established director.</option>
+            <option value="teaches_lesson">The movie teaches the viewer a lesson</option>
+        </select>
+        <br><br>
+        <input type="checkbox" id="watched_uncharted" name="watched_uncharted" onclick="reveal()">
+        <label class="pure-checkbox" for="watched_uncharted"> I have watched the movie "Uncharted"</label>
+        <br><br>
+        <label for="conditional_question" id="conditional_question">What did you like about the movie?</label>
+        <br>
+        <input type="text" id="conditional_answer" name="conditional_answer" cols="50" rows="5" minlength="3"></textarea>
+         <br><br>
+         <input class="pure-button pure-button-primary" type="submit" value="Submit">
+      </form>
+</div>
+{%endblock%}

@@ -1,0 +1,31 @@
+body {
+    background-color: white;
+    color: black;
+}
+
+.wrap {
+    overflow: hidden;
+    position: relative;
+  }
+  
+.bg {
+    opacity: 0.6;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+  }
+  
+.content {
+    color: black;
+    width:40%;
+    position: relative;
+  }
+
+#conditional_question{
+    visibility: hidden;
+}
+#conditional_answer{
+  visibility: hidden;
+}

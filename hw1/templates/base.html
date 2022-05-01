@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %} Movie Survey</title>
+    <script src = "/static/general.js"></script>
+    <script src=https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.js%3E></script>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css" integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5" 
+    crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/general.css">
+</head>
+<body >
+    <div class="wrap">
+        <img
+          class="bg"
+          src="/static/images/movie.jpeg"
+        >
+        <div class="content">
+          <h1>Movie Survey:</h1>
+        </div>
+      </div>
+    {% block content %} 
+    {% endblock %}
+
+</body>   
+</html>   

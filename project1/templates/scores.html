@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}project{% endblock %}
+{% block head %}
+
+<style>
+    .playForm {
+        clear: both;
+        display: flex;
+        flex-direction: row;
+        /* flex-direction: row; */
+        /* clear: both; */
+        background-color: #f2f2f2;
+        align-items: center;
+        /* display: grid; */
+        /* grid-template-columns: 1fr 1fr; */
+        padding: 20px;
+        /*         margin: 20px 600px 20px 20px; */
+        justify-content: space-evenly;
+    }
+
+    .playForm p {
+        padding: 0 1em;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+{% from "_formhelpers.html" import render_field %}
+
+<form method=post class="playForm center" style="margin-bottom: 2em;">
+    <p>
+        {{ render_field(form.choose_field) }}
+    </p>
+    <p>
+        {{ render_field(form.choose_data) }}
+    </p>
+    <p>
+        {{ render_field(form.choose_ascending) }}
+    </p>
+    <input type=submit value=Submit class="pure-button  pure-button-primary">
+</form>
+
+<table class="pure-table summary-table center" style="margin-bottom: 2em;">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Date</th>
+            <th>Course</th>
+            <th>Score</th>
+            <th>Strokes</th>
+        </tr>
+    </thead>
+    {% for response in responses%}
+    {% if data == "" %}
+        <tr>
+            <td>{{response[0]}}</td>
+            <td>{{response[1]}}</td>
+            <td>{{response[2]}}</td>
+            <td>{{response[3]}}</td>
+            <td>{{response[4]}}</td>
+        </tr>
+    {% endif %}
+    {% if data != "" %}
+    {% set name = session['profile']['nickname'] %}
+    {% set checkName = response[0] %}
+        {% if name != checkName %}
+            <tr>
+                <td>{{response[0]}}</td>
+                <td>{{response[1]}}</td>
+                <td>{{response[2]}}</td>
+                <td>{{response[3]}}</td>
+                <td>{{response[4]}}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td style="background-color: rgb(250, 184, 202);">{{response[0]}}</td>
+                <td style="background-color: rgb(250, 184, 202);">{{response[1]}}</td>
+                <td style="background-color: rgb(250, 184, 202);">{{response[2]}}</td>
+                <td style="background-color: rgb(250, 184, 202);">{{response[3]}}</td>
+                <td style="background-color: rgb(250, 184, 202);">{{response[4]}}</td>
+            </tr>
+        {% endif %}
+    {% endif %}
+    {% endfor %}
+</table>
+<div class="chart1">
+    <canvas id="myChart1" width="400" height="400"></canvas>
+</div>
+<script>
+    const ctx = document.getElementById('myChart1');
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ labels| tojson}},
+    datasets: [{
+        label: "Score",
+        data: {{ scores| tojson}},
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+            }]
+        },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+    });
+</script>
+<div class="chart2">
+    <canvas id="myChart2" width="400" height="400"></canvas>
+</div>
+
+<script>
+    const ctx2 = document.getElementById('myChart2');
+    const myChart2 = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: {{ labels| tojson}},
+    datasets: [{
+        label: "Stroke",
+        data: {{ strokes| tojson}},
+        fill: false,
+        borderColor: 'rgb(75, 0, 192)',
+        tension: 0.1
+            }]
+        },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+    });
+</script>
+
+
+{% endblock %}
